@@ -1,14 +1,13 @@
-# State Machina
+# State Machina 🤖
 
 A super simple state machine for Flutter and other Dart apps.
 
 ## Usage
 
 ```dart
-import 'package:test/test.dart';
 import 'package:state_machina/state_machina.dart';
 
-// Define some state in a handy class for easy reference
+// Define your states in a handy class for easy reference:
 class States {
   static final String enteringEmail = 'enteringEmail';
   static final String sendingEmail = 'sendingEmail';
@@ -40,7 +39,9 @@ RaisedButton(
       setState(() {
         state.changeTo(States.sendingEmail);
       });
+
       await _sendEmail();
+
       setState(() {
         state.changeTo(States.success);
       });
@@ -60,3 +61,34 @@ RaisedButton(
 ## API
 
 StateMachine Function(Map<String, List<String>> stateMap, [String initialState])
+
+## Installation
+
+### Add the dependency
+
+Add the package as a dependency in pubspec.yaml file:
+
+```yaml
+dependencies:
+  state_machina: 1.0.1
+```
+
+### Install
+
+You can install on the command line via pub:
+
+```sh
+$ pub get
+```
+
+or via flutter:
+
+```sh
+$ flutter pub get
+```
+
+Your editor may automatically fetch pubspec.yaml dependencies when the file is updated. This is the case if you've installed Flutter support for VS Code. Consult your editor's documentation for details.
+
+### Import
+
+import 'package:state_machina/state_machina.dart';
