@@ -1,11 +1,15 @@
 import 'package:test/test.dart';
 import 'package:state_machina/state_machina.dart';
 
-class States {
-  static final String enteringEmail = 'enteringEmail';
-  static final String sendingEmail = 'sendingEmail';
-  static final String success = 'success';
-}
+// FIXME: Easy way to run all tests for both enum and class States
+// A simple for-loop didn't work
+// class States {
+//   static final String enteringEmail = 'enteringEmail';
+//   static final String sendingEmail = 'sendingEmail';
+//   static final String success = 'success';
+// }
+
+enum States { enteringEmail, sendingEmail, success }
 
 void main() {
   group('Initializing a new StateMachine', () {

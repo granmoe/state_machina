@@ -1,20 +1,20 @@
 class StateMachine {
-  String current;
+  dynamic current;
 
-  Map<String, _State> _statesMap = Map();
-  Set<String> _stateKeys = Set();
-  Set<String> _stateValues = Set();
+  Map<dynamic, _State> _statesMap = Map();
+  Set<dynamic> _stateKeys = Set();
+  Set<dynamic> _stateValues = Set();
   _State _currentState;
-  Set<String> _nextStates = Set();
+  Set<dynamic> _nextStates = Set();
 
-  StateMachine(Map<String, List<String>> stateMap, [String initialState]) {
-    for (MapEntry<String, List<String>> state in stateMap.entries) {
+  StateMachine(Map<dynamic, List<dynamic>> stateMap, [dynamic initialState]) {
+    for (MapEntry<dynamic, List<dynamic>> state in stateMap.entries) {
       _statesMap[state.key] = _State(state.key, state.value);
       _stateKeys.add(state.key);
       _stateValues.addAll(state.value);
     }
 
-    String initialStateName = initialState ?? _statesMap.keys.first;
+    dynamic initialStateName = initialState ?? _statesMap.keys.first;
     var stateForInitialStateName = _statesMap[initialStateName];
 
     if (stateForInitialStateName == null) {
@@ -33,7 +33,7 @@ class StateMachine {
       }
     }
 
-    for (String stateName in _stateValues) {
+    for (dynamic stateName in _stateValues) {
       if (!_stateKeys.contains(stateName)) {
         throw ArgumentError(
             'State $stateName is used as a next state in stateMap but does not exist as a key in stateMap.');
@@ -41,7 +41,7 @@ class StateMachine {
     }
   }
 
-  changeTo(String stateName) {
+  changeTo(dynamic stateName) {
     _State _nextState = _statesMap[stateName];
 
     if (_nextState == null) {
@@ -61,13 +61,17 @@ class StateMachine {
 }
 
 class _State {
-  String name;
-  Set<String> nextStates = Set();
+  dynamic name;
+  Set<dynamic> nextStates = Set();
 
-  _State(String stateName, List<String> nextStatesList) {
+  _State(dynamic stateName, List<dynamic> nextStatesList) {
     name = stateName;
     if (nextStatesList != null) {
       nextStates.addAll(nextStatesList);
     }
   }
+}
+
+bool isStringOrInt(dynamic value) {
+  return value is String || value is int;
 }
