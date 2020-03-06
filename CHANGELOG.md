@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.7
+
+- Add an example
+
 ## 1.1.6
 
 - Add dartdoc documentation ✍️
