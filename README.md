@@ -86,5 +86,5 @@ var state = StateMachine({
 ## API
 
 ```dart
-StateMachine Function(Map<String, List<String>> stateMap, [String initialState])
+StateMachine Function(Map<dynamic, Map<dynamic, dynamic>> stateMap, [String initialState])
 ```
