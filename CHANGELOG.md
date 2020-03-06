@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Add events! We can create full-fledged finite state machines now 🥳
+
 ## 1.0.3
 
 - Support using enums (or anything you want) to define states
