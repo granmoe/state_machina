@@ -1,8 +1,16 @@
 # Changelog
 
+## 1.1.6
+
+- Try to fix little CHANGELOG snafu
+
 ## 1.1.5
 
 - Update README. Also, retroactively bump minor because 1.0.4 should have been a minor to 1.1.3, which would have landed this at 1.1.4 😊
+
+## 1.0.5
+
+- The mysterious missing version. This makes the pub tool happy 🤫
 
 ## 1.0.4
 
