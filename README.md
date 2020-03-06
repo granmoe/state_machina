@@ -7,14 +7,19 @@ A super simple, zero dependency, tiny state machine for Flutter and other Dart a
 ```dart
 import 'package:state_machina/state_machina.dart';
 
-// Define your states in a handy enum for easy reference:
+// Define your states and events in a couple of handy enums for easy reference:
 enum States { enteringEmail, sendingEmail, success }
+enum Events { editEmail, sendEmail, sentEmail, failedToSendEmail }
 
 // Create a state machine like so:
 var state = StateMachine({
-  States.enteringEmail: [States.sendingEmail],
-  States.sendingEmail: [States.success],
-  States.success: [],
+  States.editingEmail: {Events.sendEmail: States.sendingEmail},
+  States.sendingEmail: {
+    Events.sentEmail: States.success,
+    Events.failedToSendEmail: States.error,
+  },
+  States.success: {}, // This is a terminal state--no other states can be entered once we get here ☠️
+  States.error: {Events.editEmail: States.editingEmail}
 });
 ```
 
@@ -25,7 +30,7 @@ Now you can read the current state:
 if (state.current == States.success) return SuccessMessage()
 ```
 
-And change the state:
+And send events:
 
 ```dart
 // somewhere in your Flutter app...
@@ -33,16 +38,16 @@ RaisedButton(
   onPressed: () async {
     try {
       setState(() {
-        state.changeTo(States.sendingEmail);
+        state.send(Events.sendEmail);
       });
 
       await _sendEmail();
 
       setState(() {
-        state.changeTo(States.success);
+        state.send(Events.sentEmail);
       });
     } catch (e) {
-      ...
+      state.send(Events.failedToSendEmail);
     }
   },
   child: const Text('Submit')
@@ -52,8 +57,9 @@ RaisedButton(
 ## Additional Details
 
 - You may pass an optional initialState string as the second argument (positional). If not, the initial state defaults to the key of the first entry in the state map.
-- Runtime exceptions will be thrown if you pass in an invalid state map (unreachable states, next states that don't exist) or an invalid initial state, or if you attempt to change to a state that doesn't exist or isn't a valid next state for the current state.
-- You can also define your states using a class, if desired:
+- Runtime exceptions will be thrown if you pass in an invalid state map (unreachable states, next states that don't exist) or an invalid initial state, or if you send an event that doesn't exist in the state map.
+- The type of individual states can be anything: String, int, object. You simply have to ensure that your state map is sound (you'll get helpful error messages if it isn't).
+- You can also define your states and events using classes, if desired:
 
 ```dart
 class States {
@@ -63,7 +69,19 @@ class States {
 }
 ```
 
-The type of individual states can be anything: String, int, object. You simply have to ensure that your state map is sound (you'll get helpful error messages if it isn't).
+And for that matter, nothing is stopping you from passing in literal values:
+
+```dart
+var state = StateMachine({
+  'editingEmail': {'sendEmail': 'sendingEmail'},
+  'sendingEmail': {
+    'sentEmail': 'success',
+    'failedToSendEmail': 'error',
+  },
+  'success': {},
+  'error': {'editEmail': 'editingEmail'}
+});
+```
 
 ## API
 

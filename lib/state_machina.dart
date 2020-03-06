@@ -1,30 +1,30 @@
 class StateMachine {
   dynamic current;
 
-  Map<dynamic, _State> _statesMap = Map();
+  Map<dynamic, Map<dynamic, dynamic>> _stateMap = Map();
   Set<dynamic> _stateKeys = Set();
   Set<dynamic> _stateValues = Set();
-  _State _currentState;
-  Set<dynamic> _nextStates = Set();
+  Set<dynamic> _eventIds = Set();
 
-  StateMachine(Map<dynamic, List<dynamic>> stateMap, [dynamic initialState]) {
-    for (MapEntry<dynamic, List<dynamic>> state in stateMap.entries) {
-      _statesMap[state.key] = _State(state.key, state.value);
+  StateMachine(Map<dynamic, Map<dynamic, dynamic>> stateMap,
+      [dynamic initialState]) {
+    for (MapEntry<dynamic, Map<dynamic, dynamic>> state in stateMap.entries) {
       _stateKeys.add(state.key);
-      _stateValues.addAll(state.value);
+      _stateValues.addAll(state.value.values);
+      _eventIds.addAll(state.value.keys);
     }
 
-    dynamic initialStateName = initialState ?? _statesMap.keys.first;
-    var stateForInitialStateName = _statesMap[initialStateName];
+    _stateMap = stateMap;
 
-    if (stateForInitialStateName == null) {
-      throw ArgumentError(
-          "No state exists for the initial state '$initialStateName'. Please check the initialState field of your StateMachineDefinition and try again.");
+    if (initialState == null) {
+      current = _stateMap.keys.first;
+    } else {
+      if (!_stateKeys.contains(initialState)) {
+        throw ArgumentError("No state exists for initialState $initialState");
+      }
+
+      current = initialState;
     }
-
-    _currentState = stateForInitialStateName;
-    _nextStates = _currentState.nextStates;
-    current = _currentState.name;
 
     for (var stateName in _stateKeys.skip(1)) {
       if (!_stateValues.contains(stateName)) {
@@ -41,34 +41,13 @@ class StateMachine {
     }
   }
 
-  changeTo(dynamic stateName) {
-    _State _nextState = _statesMap[stateName];
-
-    if (_nextState == null) {
+  send(dynamic eventId) {
+    if (!_eventIds.contains(eventId)) {
       throw ArgumentError(
-          'Cannot change to state $stateName because it is not a key in the stateMap.');
+          'Received an unknown event: $eventId. Only events present in the state map may be sent.');
     }
 
-    if (!_nextStates.contains(stateName)) {
-      throw ArgumentError(
-          'State $stateName is not a valid next state for current state $current.');
-    }
-
-    current = stateName;
-    _currentState = _nextState;
-    _nextStates = _currentState.nextStates;
-  }
-}
-
-class _State {
-  dynamic name;
-  Set<dynamic> nextStates = Set();
-
-  _State(dynamic stateName, List<dynamic> nextStatesList) {
-    name = stateName;
-    if (nextStatesList != null) {
-      nextStates.addAll(nextStatesList);
-    }
+    current = _stateMap[current][eventId];
   }
 }
 

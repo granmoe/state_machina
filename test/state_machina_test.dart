@@ -1,39 +1,43 @@
 import 'package:test/test.dart';
 import 'package:state_machina/state_machina.dart';
 
-// FIXME: Easy way to run all tests for both enum and class States
+// FIXME: Easy way to run all tests for both enum and class States and Events
 // A simple for-loop didn't work
+
 // class States {
-//   static final String enteringEmail = 'enteringEmail';
+//   static final String editingEmail = 'editingEmail';
 //   static final String sendingEmail = 'sendingEmail';
 //   static final String success = 'success';
 // }
 
-enum States { enteringEmail, sendingEmail, success }
+enum States { editingEmail, sendingEmail, success, error }
+enum Events { editEmail, sendEmail, sentEmail, failedToSendEmail }
+
+var stateMap = {
+  States.editingEmail: {Events.sendEmail: States.sendingEmail},
+  States.sendingEmail: {
+    Events.sentEmail: States.success,
+    Events.failedToSendEmail: States.error,
+  },
+  States.success: {},
+  States.error: {Events.editEmail: States.editingEmail}
+};
 
 void main() {
   group('Initializing a new StateMachine', () {
     test(
         'Returns a StateMachine with initial state defaulted to first stateMap entry when initialState is not passed',
         () {
-      var state = StateMachine({
-        States.enteringEmail: [States.sendingEmail],
-        States.sendingEmail: [States.success],
-        States.success: [],
-      });
+      var state = StateMachine(stateMap);
 
       expect(state is StateMachine, equals(true));
-      expect(state.current, equals(States.enteringEmail));
+      expect(state.current, equals(States.editingEmail));
     });
 
     test(
         'Returns a StateMachine with initial state set to the initialState when initialState is passed',
         () {
-      var state = StateMachine({
-        States.enteringEmail: [States.sendingEmail],
-        States.sendingEmail: [States.success],
-        States.success: [],
-      }, States.sendingEmail);
+      var state = StateMachine(stateMap, States.sendingEmail);
 
       expect(state is StateMachine, equals(true));
       expect(state.current, equals(States.sendingEmail));
@@ -43,12 +47,7 @@ void main() {
     test('Throws an error when an initialState that does not exist is passed',
         () {
       try {
-        expect(
-            () => StateMachine({
-                  States.enteringEmail: [States.sendingEmail],
-                  States.sendingEmail: [States.success],
-                  States.success: [],
-                }, 'this does not exist'),
+        expect(() => StateMachine(stateMap, 'this does not exist'),
             throwsArgumentError);
       } finally {}
     });
@@ -58,9 +57,15 @@ void main() {
         () {
       expect(
           () => StateMachine({
-                States.enteringEmail: [States.sendingEmail],
-                States.sendingEmail: [States.success],
-                'this state cannot be reached': [],
+                States.editingEmail: {Events.sendEmail: States.sendingEmail},
+                States.sendingEmail: {
+                  Events.sentEmail: States.success,
+                  Events.failedToSendEmail: States.error,
+                },
+                States.success: {},
+                'this state cannot be reached': {
+                  Events.editEmail: States.editingEmail
+                }
               }),
           throwsArgumentError);
     });
@@ -70,9 +75,15 @@ void main() {
         () {
       expect(
           () => StateMachine({
-                States.enteringEmail: ['this does not exist'],
-                States.sendingEmail: [States.success],
-                States.success: []
+                States.editingEmail: {
+                  Events.sendEmail: 'this state does not exist'
+                },
+                States.sendingEmail: {
+                  Events.sentEmail: States.success,
+                  Events.failedToSendEmail: States.error,
+                },
+                States.success: {},
+                States.error: {Events.editEmail: States.editingEmail}
               }),
           throwsArgumentError);
     });
@@ -80,37 +91,17 @@ void main() {
 
   group('Changing state', () {
     test('Changes to a valid next state', () {
-      var state = StateMachine({
-        States.enteringEmail: [States.sendingEmail],
-        States.sendingEmail: [States.success],
-        States.success: [],
-      });
+      var state = StateMachine(stateMap);
 
-      state.changeTo(States.sendingEmail);
+      state.send(Events.sendEmail);
 
       expect(state.current, equals(States.sendingEmail));
     });
 
-    test('Throws an error when changing to a state that does not exist', () {
-      var state = StateMachine({
-        States.enteringEmail: [States.sendingEmail],
-        States.sendingEmail: [States.success],
-        States.success: [],
-      });
+    test('Throws an error when an unknown event is sent', () {
+      var state = StateMachine(stateMap);
 
-      expect(() => state.changeTo('this does not exist'), throwsArgumentError);
-    });
-
-    test(
-        'Throws an error when changing to a state that is not a valid next state for the current state',
-        () {
-      var state = StateMachine({
-        States.enteringEmail: [States.sendingEmail],
-        States.sendingEmail: [States.success],
-        States.success: [],
-      });
-
-      expect(() => state.changeTo(States.success), throwsArgumentError);
+      expect(() => state.send('this does not exist'), throwsArgumentError);
     });
   });
 }
