@@ -56,9 +56,9 @@ RaisedButton(
 
 ## Additional Details
 
-- You may pass an optional initialState string as the second argument (positional). If not, the initial state defaults to the key of the first entry in the state map.
+- You may pass an optional initialState as the second argument. If not, the initial state defaults to the key of the first entry in the state map.
 - Runtime exceptions will be thrown if you pass in an invalid state map (unreachable states, next states that don't exist) or an invalid initial state, or if you send an event that doesn't exist in the state map.
-- The type of individual states can be anything: String, int, object. You simply have to ensure that your state map is sound (you'll get helpful error messages if it isn't).
+- The type of individual states can be anything: String, int, object. You simply have to ensure that your state map is valid (you'll get helpful error messages if it isn't).
 - You can also define your states and events using classes, if desired:
 
 ```dart

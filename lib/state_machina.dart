@@ -1,4 +1,6 @@
+/// A simple state machine class that allows easily creating a FSM based on a state map and optional initial state, validating the correctness of both, and handles events, updating the current state per the state map.
 class StateMachine {
+  /// The current state
   dynamic current;
 
   Map<dynamic, Map<dynamic, dynamic>> _stateMap = Map();
@@ -6,6 +8,10 @@ class StateMachine {
   Set<dynamic> _stateValues = Set();
   Set<dynamic> _eventIds = Set();
 
+  /// Returns a finite state machine based on [stateMap] and optional [initialState].
+  ///
+  /// Throws [ArgumentError] if the [stateMap] is not valid (unreachable or non-existent states).
+  /// Throws [ArgumentError] if [initialState] is not found in [stateMap].
   StateMachine(Map<dynamic, Map<dynamic, dynamic>> stateMap,
       [dynamic initialState]) {
     for (MapEntry<dynamic, Map<dynamic, dynamic>> state in stateMap.entries) {
@@ -41,6 +47,9 @@ class StateMachine {
     }
   }
 
+  /// Sends [eventId] into the state machine and optionally transitions to the next state based on the state map.
+  ///
+  /// Throws [ArgumentError] if [eventId] is not found in [stateMap].
   send(dynamic eventId) {
     if (!_eventIds.contains(eventId)) {
       throw ArgumentError(
@@ -51,6 +60,7 @@ class StateMachine {
   }
 }
 
+/// Returns a bool indicating whether [value] is a String or an int.
 bool isStringOrInt(dynamic value) {
   return value is String || value is int;
 }
