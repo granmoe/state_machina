@@ -2,7 +2,7 @@
 
 A super simple, zero dependency, tiny state machine for Flutter and other Dart apps.
 
-## Usage
+## Basic Usage
 
 ```dart
 import 'package:state_machina/state_machina.dart';
@@ -54,12 +54,10 @@ RaisedButton(
 )
 ```
 
-## Additional Details
-
 - You may pass an optional initialState as the second argument. If not, the initial state defaults to the key of the first entry in the state map.
 - Runtime exceptions will be thrown if you pass in an invalid state map (unreachable states, next states that don't exist) or an invalid initial state, or if you send an event that doesn't exist in the state map.
 - The type of individual states can be anything: String, int, object. You simply have to ensure that your state map is valid (you'll get helpful error messages if it isn't).
-- You can also define your states and events using classes, if desired:
+- You could also store your states and events in classes, if desired:
 
 ```dart
 class States {
@@ -83,8 +81,14 @@ var state = StateMachine({
 });
 ```
 
-## API
+The only requirement is that all the primitive keys and values in your state map are strings or values of an enum.
+
+## Listeners
+
+Listeners can be registered and will be called every time `send` is called, after `send` resolves the event and updates the current state. Listeners receive the current state, previous state, and event that triggered the listener:
 
 ```dart
-StateMachine Function(Map<dynamic, Map<dynamic, dynamic>> stateMap, [String initialState])
+  state.addListener((current, previous, event) {
+    // Do some cool stuff here
+  })
 ```

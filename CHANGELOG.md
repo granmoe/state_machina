@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.8
+
+- Add listeners 🎧
+
 ## 1.1.7
 
 - Add an example

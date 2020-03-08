@@ -87,6 +87,52 @@ void main() {
               }),
           throwsArgumentError);
     });
+
+    test(
+        'Throws an error when stateMap contains any primitive key or value that is not a string or a value of an enum.',
+        () {
+      expect(
+          () => StateMachine({
+                States.error: {true: States.editingEmail}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                States.error: {Events.editEmail: 2}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                States.error: {Events.editEmail: 7.9}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                States.error: {Events.editEmail: () {}}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                States.error: {Set(): States.editingEmail}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                States.error: {Map(): States.editingEmail}
+              }),
+          throwsArgumentError);
+
+      expect(
+          () => StateMachine({
+                #States: {Events.editEmail: States.editingEmail}
+              }),
+          throwsArgumentError);
+    });
   });
 
   group('Changing state', () {
@@ -103,5 +149,55 @@ void main() {
 
       expect(() => state.send('this does not exist'), throwsArgumentError);
     });
+
+    test('Cannot change from a terminal state once it is reached', () {
+      var state = StateMachine({
+        'start': {'some-event': 'end'},
+        'end': {}
+      });
+
+      state.send('some-event');
+      state.send('some-event');
+      state.send('some-event');
+
+      expect(state.current, equals('end'));
+    });
+  });
+
+  test('Can add and remove listeners', () {
+    var state = StateMachine({
+      'on': {'toggle': 'off'},
+      'off': {'toggle': 'on'}
+    });
+
+    int calls1 = 0;
+    var listener1 = (current, _previous, _event) {
+      calls1++;
+    };
+    state.addListener(listener1);
+
+    state.send('toggle');
+
+    expect(calls1, equals(1));
+
+    int calls2 = 0;
+    var listener2 = (current, _previous, _event) {
+      calls2++;
+    };
+
+    state.addListener(listener2);
+
+    state.send('toggle');
+
+    expect(calls1, equals(2));
+    expect(calls2, equals(1));
+
+    state.removeListener(listener1);
+    state.removeListener(listener2);
+
+    state.send('toggle');
+
+    expect(calls1, equals(2));
+    expect(calls2, equals(1));
   });
 }
