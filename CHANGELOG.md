@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.9
+
+- Remove usage of dart:mirrors to check for enums since that can't run in flutter 😱
+
 ## 1.1.8
 
 - Add listeners 🎧

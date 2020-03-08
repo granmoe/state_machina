@@ -1,5 +1,3 @@
-import 'dart:mirrors';
-
 /// A simple state machine class that allows easily creating a FSM based on a state map and optional initial state, validating the correctness of both, and handles events, updating the current state per the state map.
 class StateMachine {
   /// The current state
@@ -49,30 +47,6 @@ class StateMachine {
             'State $stateName is used as a next state in stateMap but does not exist as a key in stateMap.');
       }
     }
-
-    for (dynamic stateName in _stateKeys) {
-      if (!_isStringOrEnum(stateName)) {
-        print(stateName);
-        throw ArgumentError(
-            'All key and value primitives in your state map must be either String or int');
-      }
-    }
-
-    for (dynamic stateValue in _stateValues) {
-      if (!_isStringOrEnum(stateValue)) {
-        print(stateValue);
-        throw ArgumentError(
-            'All key and value primitives in your state map must be either String or int');
-      }
-    }
-
-    for (dynamic eventName in _eventIds) {
-      if (!_isStringOrEnum(eventName)) {
-        print(eventName);
-        throw ArgumentError(
-            'All key and value primitives in your state map must be either String or int');
-      }
-    }
   }
 
   /// Sends [eventId] into the state machine and optionally transitions to the next state based on the state map.
@@ -107,9 +81,4 @@ class StateMachine {
       Function(dynamic current, dynamic previous, dynamic event) listener) {
     _listeners.remove(listener);
   }
-}
-
-bool _isStringOrEnum(dynamic value) {
-  InstanceMirror instanceMirror = reflect(value);
-  return value is String || instanceMirror.type.isEnum;
 }

@@ -81,7 +81,7 @@ var state = StateMachine({
 });
 ```
 
-The only requirement is that all the primitive keys and values in your state map are strings or values of an enum.
+Typically, strings or enums are the most useful types for the primitive keys and values in your state map.
 
 ## Listeners
 
