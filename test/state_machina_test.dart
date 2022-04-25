@@ -30,7 +30,6 @@ void main() {
         () {
       var state = StateMachine(stateMap);
 
-      expect(state is StateMachine, equals(true));
       expect(state.current, equals(States.editingEmail));
     });
 
@@ -39,7 +38,6 @@ void main() {
         () {
       var state = StateMachine(stateMap, States.sendingEmail);
 
-      expect(state is StateMachine, equals(true));
       expect(state.current, equals(States.sendingEmail));
     });
 

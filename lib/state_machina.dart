@@ -60,8 +60,8 @@ class StateMachine {
 
     dynamic previous = current;
 
-    if (_stateMap[current].isNotEmpty) {
-      current = _stateMap[current][eventId];
+    if (_stateMap[current]!.isNotEmpty) {
+      current = _stateMap[current]![eventId];
     }
 
     for (var func in _listeners) {
